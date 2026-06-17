@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FraudLens — Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">Fraud<span>Lens</span></a>
+  <a href="index.html" class="active">Dashboard</a>
+  <a href="graph.html">Graph</a>
+  <a href="accounts.html">Accounts</a>
+  <a href="simulate.html">Simulate</a>
+</nav>
+
+<div class="page">
+  <h1>Dashboard</h1>
+  <p class="subtitle">Live overview of UPI transaction fraud detection — auto-refreshes every 3 s</p>
+
+  <!-- Summary Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">Total Transactions</div>
+      <div class="value" id="stat-total">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Accounts Monitored</div>
+      <div class="value normal" id="stat-accounts">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Cycles Detected</div>
+      <div class="value fraud" id="stat-cycles">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Hub Accounts</div>
+      <div class="value suspicious" id="stat-hubs">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Rapid Hop Alerts</div>
+      <div class="value fraud" id="stat-rapids">–</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Total Fraud Alerts</div>
+      <div class="value fraud" id="stat-alerts">–</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <!-- Fraud Alerts Panel -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🚨 Fraud Alerts</div>
+        <div id="alert-count" class="card-meta"></div>
+      </div>
+      <div id="alert-list" class="alert-list">
+        <div class="empty"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- Live Transaction Feed -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚡ Live Transaction Feed</div>
+        <div class="card-meta" id="feed-meta">polling every 3 s</div>
+      </div>
+      <div id="txn-feed" class="txn-feed">
+        <div class="empty"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Algorithm Info -->
+  <div style="margin-top: 20px;" class="three-col">
+    <div class="card">
+      <div class="card-header"><div class="card-title">🔄 Cycle Detection</div><span class="badge badge-fraud">DFS</span></div>
+      <p style="font-size:12px;color:var(--text-muted);line-height:1.6">
+        Strategy: <strong>CycleDetector</strong><br>
+        Algorithm: DFS + visited set + recursion stack<br>
+        Complexity: <strong>O(V + E)</strong><br>
+        Detects circular money laundering patterns.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">🎯 Hub Detection</div><span class="badge badge-suspicious">Max-Heap</span></div>
+      <p style="font-size:12px;color:var(--text-muted);line-height:1.6">
+        Strategy: <strong>HubDetector</strong><br>
+        Algorithm: PriorityQueue on degree score<br>
+        Complexity: <strong>O(n log k)</strong><br>
+        Identifies accounts with abnormally high connections.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">⚡ Rapid Hops</div><span class="badge badge-at-risk" style="background:#f3eefe;color:#7b5ea7;">Sliding Window</span></div>
+      <p style="font-size:12px;color:var(--text-muted);line-height:1.6">
+        Strategy: <strong>RapidHopDetector</strong><br>
+        Algorithm: Two-pointer sliding window<br>
+        Complexity: <strong>O(n)</strong><br>
+        Flags accounts with 3+ transactions in 5 minutes.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  loadDashboard();
+</script>
+</body>
+</html>

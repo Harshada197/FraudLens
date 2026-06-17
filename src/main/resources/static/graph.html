@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FraudLens — Transaction Graph</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Vis.js served locally -->
+  <script src="vis-network.min.js"></script>
+  <link rel="stylesheet" href="vis-network.min.css">
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">Fraud<span>Lens</span></a>
+  <a href="index.html">Dashboard</a>
+  <a href="graph.html" class="active">Graph</a>
+  <a href="accounts.html">Accounts</a>
+  <a href="simulate.html">Simulate</a>
+</nav>
+
+<!-- Account Detail Side Panel -->
+<div id="detail-panel">
+  <button id="close-panel" onclick="closeDetailPanel()">✕</button>
+  <h3 id="dp-title">Account Details</h3>
+  <div id="dp-content"></div>
+</div>
+
+<div class="page">
+  <h1>Transaction Network Graph</h1>
+  <p class="subtitle">Directed graph of UPI transactions — click any node to inspect its connections</p>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button class="btn active" id="btn-month" onclick="setViewMode('month')">Month View</button>
+    <button class="btn"        id="btn-week"  onclick="setViewMode('week')">Week View</button>
+    <button class="btn"        id="btn-day"   onclick="setViewMode('day')">Day View</button>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+      <label style="font-size:12px;color:var(--text-muted);font-weight:600;" id="date-label">Select Date:</label>
+      <input type="date" id="date-picker" value="2024-01-18" min="2024-01-01" max="2024-01-31" onchange="onDateChange()">
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend" style="margin-bottom:14px;">
+    <div class="legend-item"><div class="legend-dot" style="background:#E24B4A"></div>Fraud</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#EF9F27"></div>Suspicious</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a1855c"></div>At Risk</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4e9af1"></div>Normal</div>
+    <div class="legend-item" style="margin-left:auto;font-size:12px;color:var(--text-muted);">
+      Showing <strong id="node-count">–</strong> nodes · <strong id="edge-count">–</strong> edges
+    </div>
+  </div>
+
+  <!-- Network -->
+  <div id="network-container">
+    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.4);">
+      <div class="spinner" style="border-color:rgba(255,255,255,0.2);border-top-color:#fff;"></div>
+      &nbsp; Loading graph…
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  loadGraph();
+</script>
+</body>
+</html>

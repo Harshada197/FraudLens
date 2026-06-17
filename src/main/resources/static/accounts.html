@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FraudLens — Accounts</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">Fraud<span>Lens</span></a>
+  <a href="index.html">Dashboard</a>
+  <a href="graph.html">Graph</a>
+  <a href="accounts.html" class="active">Accounts</a>
+  <a href="simulate.html">Simulate</a>
+</nav>
+
+<div class="page">
+  <h1>All Accounts</h1>
+  <p class="subtitle">100 monitored UPI accounts with computed risk scores and fraud status.</p>
+
+  <div class="card">
+    <div class="card-header">
+      <div style="display:flex;gap:10px;align-items:center;">
+        <input type="text" id="search-input" placeholder="Search account ID or name…"
+               style="width:240px;" oninput="filterAccounts()">
+        <select id="status-filter" onchange="filterAccounts()">
+          <option value="">All statuses</option>
+          <option value="FRAUD">Fraud</option>
+          <option value="SUSPICIOUS">Suspicious</option>
+          <option value="AT_RISK">At Risk</option>
+          <option value="NORMAL">Normal</option>
+        </select>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#E24B4A;"></div>Fraud</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#EF9F27;"></div>Suspicious</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#a1855c;"></div>At Risk</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#639922;"></div>Normal</div>
+      </div>
+    </div>
+
+    <div id="table-container">
+      <div class="empty"><div class="spinner"></div><p style="margin-top:12px;">Loading accounts…</p></div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--text-muted);" id="row-count"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  loadAccounts();
+</script>
+</body>
+</html>

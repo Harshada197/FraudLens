@@ -1,0 +1,21 @@
+# Maven
+target/
+*.jar
+*.war
+*.nar
+*.ear
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug files
+debug_springboot_run.txt
+debug_springboot_run_filtered.txt
