@@ -5,9 +5,28 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
 ![Vis.js](https://img.shields.io/badge/Vis.js-Network_Graph-blue?style=for-the-badge)
 
-**FraudLens** is an in-memory UPI transaction fraud detection and visualization engine.  
+**FraudLens** is an in-memory UPI transaction fraud detection and visualization engine. 
 
 Instead of relying on heavy external graph databases, FraudLens implements a **custom in-memory graph engine** to detect complex money laundering patterns, identify mule accounts, and dynamically calculate account risk scores. The project includes a live-updating dashboard with an interactive network graph, allowing fraud analysts to visually trace illicit money flows.
+
+## ❓ Why Graphs?
+Fraud rarely exists in a single transaction. Instead, fraud emerges through relationships between accounts. 
+
+Representing transactions as a directed graph allows classical graph algorithms like DFS and BFS to efficiently identify circular money laundering, hub accounts, layered transfers and network propagation.
+
+## 🏛️ System Architecture
+
+```mermaid
+graph TD
+    A[DataSeeder] --> B[TransactionGraph]
+    B --> C[Fraud Detectors]
+    B --> D[Behaviour Analyzer]
+    C --> E[Propagation Scorer]
+    D --> E
+    E --> F[FraudAnalysisService]
+    F --> G[REST API - Spring Boot]
+    G --> H[Interactive Dashboard]
+```
 
 ## ✨ Key Features
 
@@ -30,6 +49,52 @@ FraudLens relies on a suite of custom detectors:
 | **Structuring / Smurfing** | Detects multiple transactions intentionally kept just below reporting thresholds. | Grouping & Aggregation | `O(n)` |
 | **Risk Propagation** | Contaminates accounts based on their proximity (degrees of separation) to known fraud nodes. | **Breadth First Search (BFS)** | `O(V + E)` |
 | **Behaviour Analysis** | Penalizes deviations from a profile's expected max amount, monthly frequency, and active hours. | Statistical Profiling | `O(n)` |
+
+## 📊 Risk Scoring Logic
+The risk scoring follows an additive model:
+`Final Risk Score = Base Pattern Score + Propagation Bonus + Behaviour Bonus`
+
+- **Base Pattern**: Accounts directly involved in Hubs, Cycles, or Rapid Hops receive a high baseline score (e.g., 100 for a Cycle).
+- **Propagation**: Accounts closely connected to flagged fraud nodes receive a propagation penalty calculated via BFS (closer proximity = higher penalty).
+- **Behaviour**: Accounts deviating from their expected financial profile (e.g., abnormally high amounts, excessive frequencies, off-hours) receive additional penalties.
+
+Scores are clamped between 0 and 100, dynamically categorizing accounts into 🟢 **NORMAL**, 🟡 **AT_RISK**, 🟠 **SUSPICIOUS**, or 🔴 **FRAUD**.
+
+## 📐 Design Decisions
+- **Custom In-Memory Graph**: Chose native Java collections (`HashMap`, `ArrayList`) to build a directed graph from scratch instead of Neo4j to ensure lightweight, zero-dependency deployment for demonstration and educational purposes.
+- **Vanilla Frontend**: Used raw HTML, CSS Variables, and Vanilla JS over heavy SPA frameworks (React/Angular) to keep the project simple, highly performant, and easy to understand.
+- **Decoupled Detectors**: Each fraud pattern (Cycle, Hub, Rapid Hop) is implemented as a standalone strategy class, making the system highly extensible for future rules.
+
+## 🏗️ Project Structure
+```text
+src/
+├── main/java/com/fraudlens/
+│   ├── controller/      # REST API endpoints for the dashboard
+│   ├── data/            # DataSeeder, Salary & Lifestyle Generators
+│   ├── graph/           # Core Graph Engine, DFS/BFS Detectors, Propagation
+│   ├── model/           # Account, Transaction, FraudAlert Data Models
+│   └── service/         # FraudAnalysisService, BehaviourAnalyzer
+└── main/resources/static/ # Frontend UI (HTML, CSS, Vanilla JS)
+```
+
+## 📂 Datasets
+FraudLens uses a highly realistic, procedurally generated simulated dataset created on startup:
+- **Accounts**: 100 accounts categorized by profession (Salaried, Student, Merchant).
+- **Organic Traffic**: Simulates monthly salaries, peer-to-peer transfers, and lifestyle purchases.
+- **Injected Fraud**: Hardcoded fraud topologies (cycles, hubs, rapid hops) are injected seamlessly without breaking realistic account balances.
+
+## 🚀 Future Scope
+- **Real-Time Transaction Monitoring** – Support live transaction streams instead of simulated data.
+- **Explainable Risk Dashboard** – Display detailed evidence for each risk score (patterns, behaviour, propagation, and score breakdown).
+- **Historical Behaviour Learning** – Learn user behaviour from previous transaction history instead of predefined profession-based profiles.
+- **Configurable Fraud Detection Rules** – Allow thresholds (hub degree, rapid-hop window, transaction limits, etc.) to be modified from the dashboard.
+- **Analyst Investigation Workflow** – Enable investigators to mark accounts as Fraud, False Positive, or Under Investigation and add investigation notes.
+
+## ⚠️ Current Limitations
+- Uses simulated UPI transaction data instead of real-time banking data.
+- Behaviour analysis is based on predefined profession profiles, not historical account activity.
+- Uses rule-based graph algorithms, so newly emerging fraud strategies may require additional detection rules.
+- Stores data in-memory, making it suitable for demonstration and educational purposes rather than large-scale production deployment.
 
 ## 🛠️ Tech Stack
 
@@ -68,17 +133,6 @@ FraudLens relies on a suite of custom detectors:
    http://localhost:8080/fraudlens/
    ```
 
-## 🎮 Usage
+## 📄 License
 
-Once the application is running, the `DataSeeder` will automatically generate the accounts and transactions in-memory.
-
-1. **Dashboard (`/`)**: View high-level metrics and active alerts.
-2. **Graph View (`/graph.html`)**: Interact with the live transaction network.
-   - Click on nodes (accounts) to see detailed statistics and risk factors.
-   - Use the **Month / Week / Day** toggles to slice the data.
-   - Use the **Checkboxes** to filter the graph by risk level.
-3. **Accounts List (`/accounts.html`)**: View a tabular list of all 100 monitored accounts.
-   - Click column headers to sort by Risk Score, Transactions, Name, etc.
-   - Use the search bar to find specific Account IDs.
-
-
+This project is open-source and available under the [MIT License](LICENSE).
